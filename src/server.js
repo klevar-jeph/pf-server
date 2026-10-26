@@ -16,10 +16,16 @@ function canonicalOrigin(value) {
   return String(value || "").trim().toLowerCase().replace(/\/+$/, "");
 }
 
-const origins = (process.env.FRONTEND_ORIGINS || "http://localhost:3000")
+const defaultOrigins = [
+  "http://localhost:3000",
+  "https://patientsflow.co.uk",
+  "https://app.patientsflow.co.uk",
+];
+const configuredOrigins = (process.env.FRONTEND_ORIGINS || "")
   .split(",")
   .map(canonicalOrigin)
   .filter(Boolean);
+const origins = [...new Set([...defaultOrigins, ...configuredOrigins].map(canonicalOrigin))];
 
 function isAllowedOrigin(origin) {
   return Boolean(origin) && origins.includes(canonicalOrigin(origin));

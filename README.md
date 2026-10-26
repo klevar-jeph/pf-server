@@ -56,7 +56,7 @@ No 'Access-Control-Allow-Origin' header is present on the requested resource
 
 List **every** host the frontend is served from, including the apex domain if the site is reachable without `www` — `https://patientsflow.co.uk` and `https://www.patientsflow.co.uk` are different origins. Origins are compared lowercased and without a trailing slash.
 
-`FRONTEND_ORIGINS` must be set in the hosting environment (for example the Render dashboard); `.env` is not committed and is not read in production.
+The backend always allows `https://patientsflow.co.uk` and `https://app.patientsflow.co.uk` (as well as localhost for development). Add any other frontend origins to `FRONTEND_ORIGINS` in the hosting environment, such as the Render dashboard; `.env` is not committed and is not read in production.
 
 Verify an origin against a running instance:
 

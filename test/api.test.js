@@ -34,7 +34,11 @@ test("health endpoint confirms the API is running", async () => {
 });
 
 test("CORS echoes allowed origins and preflight succeeds", async () => {
-  const allowed = process.env.FRONTEND_ORIGINS?.split(",").map((o) => o.trim()) ?? [];
+  const allowed = [
+    "https://patientsflow.co.uk",
+    "https://app.patientsflow.co.uk",
+    ...(process.env.FRONTEND_ORIGINS?.split(",").map((origin) => origin.trim()) ?? []),
+  ];
 
   for (const origin of allowed) {
     const preflight = await fetch(`${baseUrl}/api/contact`, {
@@ -51,6 +55,23 @@ test("CORS echoes allowed origins and preflight succeeds", async () => {
     const simple = await fetch(`${baseUrl}/health`, { headers: { Origin: origin } });
     assert.equal(simple.headers.get("access-control-allow-origin"), origin);
   }
+});
+
+test("CORS matches configured origins case-insensitively and without trailing slashes", async () => {
+  const preflight = await fetch(`${baseUrl}/api/newsletter`, {
+    method: "OPTIONS",
+    headers: {
+      Origin: "HTTPS://APP.PATIENTSFLOW.CO.UK/",
+      "Access-Control-Request-Method": "POST",
+      "Access-Control-Request-Headers": "content-type",
+    },
+  });
+
+  assert.equal(preflight.status, 204);
+  assert.equal(
+    preflight.headers.get("access-control-allow-origin"),
+    "HTTPS://APP.PATIENTSFLOW.CO.UK/",
+  );
 });
 
 test("CORS does not echo an origin outside the allowlist", async () => {
